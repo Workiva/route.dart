@@ -400,7 +400,8 @@ main() {
           var router = new Router(
               historyProvider: new HashHistory(windowImpl: mockWindow));
           router.root.addRoute(name: 'foo', path: '/foo');
-          router.onRouteStart.listen(expectAsync((RouteStartEvent start) async {
+          router.onRouteStart
+              .listen(expectAsync1((RouteStartEvent start) async {
             await start.completed;
             expect(router.findRoute('foo').isActive, isTrue);
           }, count: 1));

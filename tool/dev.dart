@@ -21,10 +21,13 @@ main(List<String> args) async {
 
   // Perform task configuration here as necessary.
   List<String> dirs = ['example/', 'lib/', 'test/', 'tool/'];
-  config.analyze.entryPoints = dirs;
-  config.format.directories = dirs;
+  config.analyze
+    ..entryPoints = dirs
+    ..fatalWarnings = false;
+  config.format.paths = dirs;
 
   config.test
+    ..concurrency = 1
     ..platforms = ['content-shell']
     ..unitTests = ['test/all_web_tests.dart'];
 

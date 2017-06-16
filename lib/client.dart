@@ -484,7 +484,7 @@ class RouteStartEvent {
  */
 class Router {
   HistoryProvider _history;
-  final Route root;
+  final RouteImpl root;
   final _onRouteStart =
       new StreamController<RouteStartEvent>.broadcast(sync: true);
   final bool sortRoutes;
@@ -656,7 +656,7 @@ class Router {
     });
   }
 
-  void _leave(Iterable<Route> mustLeave, Route leaveBase) {
+  void _leave(Iterable<RouteImpl> mustLeave, Route leaveBase) {
     mustLeave.forEach((toLeave) {
       var event = new RouteLeaveEvent(toLeave);
       toLeave._onLeaveController.add(event);
@@ -860,7 +860,7 @@ class Router {
   /// Returns an absolute URL for a given relative route path and parameters.
   String url(String routePath,
       {Route startingFrom, Map parameters, Map queryParameters}) {
-    var baseRoute = startingFrom == null ? root : _dehandle(startingFrom);
+    RouteImpl baseRoute = startingFrom == null ? root : _dehandle(startingFrom);
     parameters = parameters == null ? {} : parameters;
     var routeToGo = _findRoute(baseRoute, routePath);
     var tail = baseRoute._getTailUrl(routeToGo, parameters);
@@ -993,7 +993,7 @@ class Router {
    * Returns the current active route path in the route tree.
    * Excludes the root path.
    */
-  List<Route> get activePath {
+  List<RouteImpl> get activePath {
     var res = <RouteImpl>[];
     var route = root;
 

@@ -6,15 +6,18 @@ authors:
 description: A client routing library for Dart
 homepage: https://github.com/angular/route.dart
 dependencies:
-  logging: any
+  logging: ">=0.11.3 < 1.0.0"
   uuid: "^0.5.0"
 dev_dependencies:
-  analyzer: "^0.27.3"
-  browser: any
-  mockito: "^0.10.0"
-  coverage: "^0.7.2"
-  dart_dev: "^1.0.0"
-  dart_style: "^0.2.1"
-  test: "^0.12.3+5"
+  analyzer: ">=0.27.3 <2.0.0"
+  browser: ">=0.10.0 <1.0.0"
+  mockito: ">=0.10.0 <2.0.0"
+  coverage: ">=0.7.2 <2.0.0"
+  dart_dev: ">=1.0.0 <2.0.0"
+  dart_style: ">=0.2.1 <2.0.0"
+  test: ">=0.12.3+5 <2.0.0"
 environment:
   sdk: ">=1.9.0 <2.0.0"
+web:
+  compiler:
+    debug: dartdevc
