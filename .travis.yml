@@ -1,6 +1,6 @@
 language: dart
 dart:
-  - 1.19.1
+  - 1.23.0
 with_content_shell: true
 before_install:
   - export DISPLAY=:99.0
@@ -9,5 +9,6 @@ script:
   - pub run dart_dev format --check
   - pub run dart_dev analyze
   - pub run dart_dev test
-  - pub run dart_dev coverage --no-html
-  - bash <(curl -s https://codecov.io/bash) -f coverage/coverage.lcov
+# Commented out for now since coverage hangs forever for some reason
+#  - pub run dart_dev coverage --no-html
+#  - bash <(curl -s https://codecov.io/bash) -f coverage/coverage.lcov

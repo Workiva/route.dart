@@ -25,7 +25,7 @@ commonProviderTests(RouterFactory routerFactory) {
     router.root.addRoute(
         name: 'foo',
         path: '/foo',
-        enter: expectAsync((RouteEvent e) {
+        enter: expectAsync1((RouteEvent e) {
           expect(e.path, '/foo');
           expect(router.root.findRoute('foo').isActive, isTrue);
           expect(router.isUrlActive('/foo'), isTrue);
@@ -92,7 +92,7 @@ commonProviderTests(RouterFactory routerFactory) {
         ..addRoute(
             name: 'foobar',
             path: '/foo/bar',
-            enter: expectAsync((RouteEvent e) {
+            enter: expectAsync1((RouteEvent e) {
               expect(e.path, '/foo/bar');
               expect(router.root.findRoute('foobar').isActive, isTrue);
               expect(router.isUrlActive('/foo/bar'), isTrue);
@@ -113,7 +113,7 @@ commonProviderTests(RouterFactory routerFactory) {
         ..addRoute(
             name: 'foobar',
             path: '/foo/bar',
-            enter: expectAsync((RouteEvent e) {
+            enter: expectAsync1((RouteEvent e) {
               expect(e.path, '/foo/bar');
               expect(router.root.findRoute('foobar').isActive, isTrue);
               expect(router.isUrlActive('/foo/bar'), isTrue);
@@ -130,7 +130,7 @@ commonProviderTests(RouterFactory routerFactory) {
         ..addRoute(
             name: 'fooparam',
             path: '/foo/:param',
-            enter: expectAsync((RouteEvent e) {
+            enter: expectAsync1((RouteEvent e) {
               expect(e.path, '/foo/bar');
               expect(router.root.findRoute('fooparam').isActive, isTrue);
               expect(router.isUrlActive('/foo/bar'), isTrue);
@@ -143,7 +143,7 @@ commonProviderTests(RouterFactory routerFactory) {
         ..addRoute(
             name: 'paramaddress',
             path: '/:zzzzzz/address',
-            enter: expectAsync((RouteEvent e) {
+            enter: expectAsync1((RouteEvent e) {
               expect(e.path, '/foo/address');
               expect(router.root.findRoute('paramaddress').isActive, isTrue);
               expect(router.isUrlActive('/foo/address'), isTrue);
@@ -160,7 +160,7 @@ commonProviderTests(RouterFactory routerFactory) {
         ..addRoute(
             name: 'fooparam',
             path: '/:param/foo',
-            enter: expectAsync((RouteEvent e) {
+            enter: expectAsync1((RouteEvent e) {
               expect(e.path, '/bar/foo');
               expect(router.root.findRoute('fooparam').isActive, isTrue);
               expect(router.isUrlActive('/bar/foo'), isTrue);
@@ -181,7 +181,7 @@ commonProviderTests(RouterFactory routerFactory) {
         ..addRoute(
             name: 'barfoo',
             path: '/bar/foo',
-            enter: expectAsync((RouteEvent e) {
+            enter: expectAsync1((RouteEvent e) {
               expect(e.path, '/bar/foo');
               expect(router.root.findRoute('barfoo').isActive, isTrue);
               expect(router.isUrlActive('/bar/foo'), isTrue);
@@ -198,7 +198,7 @@ commonProviderTests(RouterFactory routerFactory) {
         ..addRoute(
             name: 'bazbarfoo',
             path: '/baz/bar/foo',
-            enter: expectAsync((RouteEvent e) {
+            enter: expectAsync1((RouteEvent e) {
               expect(e.path, '/baz/bar/foo');
               expect(router.root.findRoute('bazbarfoo').isActive, isTrue);
               expect(router.isUrlActive('/baz/bar/foo'), isTrue);
@@ -215,7 +215,7 @@ commonProviderTests(RouterFactory routerFactory) {
         ..addRoute(
             name: 'bazparamfoo',
             path: '/baz/:param/foo',
-            enter: expectAsync((RouteEvent e) {
+            enter: expectAsync1((RouteEvent e) {
               expect(e.path, '/baz/bar/foo');
               expect(router.root.findRoute('bazparamfoo').isActive, isTrue);
               expect(router.isUrlActive('/baz/bar/foo'), isTrue);
@@ -232,7 +232,7 @@ commonProviderTests(RouterFactory routerFactory) {
         ..addRoute(
             name: 'param1barfoo',
             path: '/:param1/bar/foo',
-            enter: expectAsync((RouteEvent e) {
+            enter: expectAsync1((RouteEvent e) {
               expect(e.path, '/baz/bar/foo');
               expect(router.root.findRoute('param1barfoo').isActive, isTrue);
               expect(router.isUrlActive('/baz/bar/foo'), isTrue);
@@ -282,12 +282,12 @@ commonProviderTests(RouterFactory routerFactory) {
   });
 
   group('hierarchical routing', () {
-    void _testParentChild(Pattern parentPath, Pattern childPath,
+    Future<bool> _testParentChild(Pattern parentPath, Pattern childPath,
         String expectedParentPath, String expectedChildPath, String testPath) {
       router.root.addRoute(
           name: 'parent',
           path: parentPath,
-          enter: expectAsync((RouteEvent e) {
+          enter: expectAsync1((RouteEvent e) {
             expect(e.path, expectedParentPath);
             expect(e.route, isNotNull);
             expect(e.route.name, 'parent');
@@ -296,15 +296,15 @@ commonProviderTests(RouterFactory routerFactory) {
             child.addRoute(
                 name: 'child',
                 path: childPath,
-                enter: expectAsync((RouteEvent e) {
+                enter: expectAsync1((RouteEvent e) {
                   expect(e.path, expectedChildPath);
                 }));
           });
-      router.route(testPath);
+      return router.route(testPath);
     }
 
     test('child router with Strings', () {
-      _testParentChild('/foo', '/bar', '/foo', '/bar', '/foo/bar');
+      return _testParentChild('/foo', '/bar', '/foo', '/bar', '/foo/bar');
     });
   });
 
@@ -717,7 +717,7 @@ commonProviderTests(RouterFactory routerFactory) {
       expect(router.activePath.map((r) => r.name), ['foo']);
     });
 
-    void _testAllowLeave(bool allowLeave) {
+    Future<bool> _testAllowLeave(bool allowLeave) {
       var completer = new Completer<bool>();
       bool barEntered = false;
       bool bazEntered = false;
@@ -738,27 +738,29 @@ commonProviderTests(RouterFactory routerFactory) {
                   path: '/baz',
                   enter: (RouteEnterEvent e) => bazEntered = true));
 
-      router.route('/foo/bar').then(expectAsync((_) {
+      router.route('/foo/bar').then(expectAsync1((_) {
         expect(barEntered, true);
         expect(bazEntered, false);
-        router.route('/foo/baz').then(expectAsync((_) {
+        router.route('/foo/baz').then(expectAsync1((_) {
           expect(bazEntered, allowLeave);
         }));
         completer.complete(allowLeave);
       }));
+
+      return completer.future;
     }
 
     test('should allow navigation', () {
-      _testAllowLeave(true);
+      return _testAllowLeave(true);
     });
 
     test('should veto navigation', () {
-      _testAllowLeave(false);
+      return _testAllowLeave(false);
     });
   });
 
   group('preEnter', () {
-    void _testAllowEnter(bool allowEnter) {
+    Future<bool> _testAllowEnter(bool allowEnter) {
       var completer = new Completer<bool>();
       bool barEntered = false;
 
@@ -774,18 +776,21 @@ commonProviderTests(RouterFactory routerFactory) {
                   preEnter: (RoutePreEnterEvent e) =>
                       e.allowEnter(completer.future)));
 
-      router.route('/foo/bar').then(expectAsync((_) {
+      Future<bool> routeFuture =
+          router.route('/foo/bar').then(expectAsync1((_) {
         expect(barEntered, allowEnter);
       }));
       completer.complete(allowEnter);
+
+      return routeFuture;
     }
 
     test('should allow navigation', () {
-      _testAllowEnter(true);
+      return _testAllowEnter(true);
     });
 
     test('should veto navigation', () {
-      _testAllowEnter(false);
+      return _testAllowEnter(false);
     });
 
     test(
@@ -1037,13 +1042,14 @@ commonProviderTests(RouterFactory routerFactory) {
   });
 
   group('Default route', () {
-    void _testHeadTail(String path, String expectFoo, String expectBar) {
+    Future<bool> _testHeadTail(
+        String path, String expectFoo, String expectBar) {
       router.root
         ..addRoute(
             name: 'foo',
             path: '/foo',
             defaultRoute: true,
-            enter: expectAsync((RouteEvent e) {
+            enter: expectAsync1((RouteEvent e) {
               expect(e.path, expectFoo);
             }),
             mount: (child) => child
@@ -1051,30 +1057,30 @@ commonProviderTests(RouterFactory routerFactory) {
                   name: 'bar',
                   path: '/bar',
                   defaultRoute: true,
-                  enter: expectAsync(
+                  enter: expectAsync1(
                       (RouteEvent e) => expect(e.path, expectBar))));
 
-      router.route(path);
+      return router.route(path);
     }
 
     test('should calculate head/tail of empty route', () {
-      _testHeadTail('', '', '');
+      return _testHeadTail('', '', '');
     });
 
     test('should calculate head/tail of partial route', () {
-      _testHeadTail('/foo', '/foo', '');
+      return _testHeadTail('/foo', '/foo', '');
     });
 
     test('should calculate head/tail of a route', () {
-      _testHeadTail('/foo/bar', '/foo', '/bar');
+      return _testHeadTail('/foo/bar', '/foo', '/bar');
     });
 
     test('should calculate head/tail of an invalid parent route', () {
-      _testHeadTail('/garbage/bar', '', '');
+      return _testHeadTail('/garbage/bar', '', '');
     });
 
     test('should calculate head/tail of an invalid child route', () {
-      _testHeadTail('/foo/garbage', '/foo', '');
+      return _testHeadTail('/foo/garbage', '/foo', '');
     });
 
     test('should follow default routes', () async {
@@ -1325,19 +1331,19 @@ commonProviderTests(RouterFactory routerFactory) {
 
   group('route', () {
     group('query params', () {
-      test('should parse query', () {
+      test('should parse query', () async {
         router.root
           ..addRoute(
               name: 'foo',
               path: '/:foo',
-              enter: expectAsync((RouteEvent e) {
+              enter: expectAsync1((RouteEvent e) {
                 expect(e.parameters, {
                   'foo': '123',
                 });
                 expect(e.queryParameters, {'a': 'b', 'b': '', 'c': 'foo bar'});
               }));
 
-        router.route('/123?a=b&b=&c=foo%20bar');
+        await router.route('/123?a=b&b=&c=foo%20bar');
       });
 
       test('should not reload when unwatched query param changes', () async {

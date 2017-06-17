@@ -92,8 +92,8 @@ main() {
     });
 
     group('proxy operations', () {
-      setUp(() {
-        router.route('/foo/foo2/abc?what=ever');
+      setUp(() async {
+        await router.route('/foo/foo2/abc?what=ever');
         routeHandle = fooRoute2.newHandle();
       });
 

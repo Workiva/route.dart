@@ -13,7 +13,7 @@ main() {
     final Map routeViewParams = {'rvParam1': 'something'};
     final Map routeViewQueryParams = {'what': 'ever'};
 
-    setUp(() {
+    setUp(() async {
       router = new Router();
       router.root
         ..addRoute(
@@ -28,7 +28,7 @@ main() {
       fooRoute2 = router.findRoute('foo.foo2');
       routeView = new RouteView(fooRoute2,
           parameters: routeViewParams, queryParameters: routeViewQueryParams);
-      router.route('/foo/foo2/abc?something=else');
+      await router.route('/foo/foo2/abc?something=else');
     });
 
     test('should retain supplied parameters', () {

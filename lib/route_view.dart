@@ -106,7 +106,7 @@ class RouteView implements Route {
 
   /// Not supported. Overridden to throw an error.
   @override
-  Route newHandle() {
+  RouteHandle newHandle() {
     throw new UnsupportedError('newHandle is not supported by RouteView');
   }
 
