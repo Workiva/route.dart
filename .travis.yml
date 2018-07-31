@@ -4,9 +4,7 @@ dart:
   - 1.24.3
   - dev
 dart_task:
-  - test: --platform vm 
-    xvfb: false
-  - test: --platform chrome
-    xvfb: false
   - dartanalyzer: lib example
   - dartfmt: true
+script:
+  - pub run dart_dev test
