@@ -7,4 +7,4 @@ dart_task:
   - dartanalyzer: lib example
   - dartfmt: true
 script:
-  - pub run dart_dev test
+  - tool/test.sh

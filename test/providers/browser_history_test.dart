@@ -2,7 +2,7 @@ library route.providers.browser_history_test;
 
 import 'dart:async';
 import 'dart:html';
-
+import 'package:dart2_constant/core.dart' as core;
 import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:route_hierarchical/client.dart';
@@ -14,8 +14,7 @@ import 'common_tests.dart';
 
 main() {
   group('BrowserHistory', () {
-    commonProviderTests(
-        () => new Router(historyProvider: new BrowserHistory()));
+    commonProviderTests(() => new Router(historyProvider: new BrowserHistory()));
 
     group('go', () {
       MockWindow mockWindow;
@@ -28,8 +27,7 @@ main() {
         router = new Router(historyProvider: historyProvider);
       });
 
-      test('should use history.push/.replaceState when using BrowserHistory',
-          () async {
+      test('should use history.push/.replaceState when using BrowserHistory', () async {
         router.root.addRoute(name: 'articles', path: '/articles');
 
         await router.go('articles', {});
@@ -54,16 +52,11 @@ main() {
         final queryParams = {'foo': 'foo bar', 'bar': '%baz+aux'};
         await router.go('articles', {}, queryParameters: queryParams);
         expect(mockWindow.history.urlList.length, equals(1));
-        expect(mockWindow.history.urlList.last,
-            equals('/articles?foo=foo%20bar&bar=%25baz%2Baux'));
+        expect(mockWindow.history.urlList.last, equals('/articles?foo=foo%20bar&bar=%25baz%2Baux'));
       });
 
       test('should work with hierarchical go', () async {
-        router.root
-          ..addRoute(
-              name: 'a',
-              path: '/:foo',
-              mount: (child) => child..addRoute(name: 'b', path: '/:bar'));
+        router.root..addRoute(name: 'a', path: '/:foo', mount: (child) => child..addRoute(name: 'b', path: '/:bar'));
 
         final routeA = router.root.findRoute('a');
 
@@ -88,12 +81,8 @@ main() {
               defaultRoute: true,
               path: '/:foo',
               enter: (_) => counters['aEnter']++,
-              mount: (child) => child
-                ..addRoute(
-                    name: 'b',
-                    defaultRoute: true,
-                    path: '/:bar',
-                    enter: (_) => counters['bEnter']++));
+              mount: (child) =>
+                  child..addRoute(name: 'b', defaultRoute: true, path: '/:bar', enter: (_) => counters['bEnter']++));
 
         expect(counters, {'aEnter': 0, 'bEnter': 0});
 
@@ -113,11 +102,7 @@ main() {
               name: 'a',
               path: '/foo',
               enter: (_) => counters['aEnter']++,
-              mount: (child) => child
-                ..addRoute(
-                    name: 'b',
-                    path: '/bar',
-                    enter: (_) => counters['bEnter']++));
+              mount: (child) => child..addRoute(name: 'b', path: '/bar', enter: (_) => counters['bEnter']++));
 
         expect(counters, {'aEnter': 0, 'bEnter': 0});
 
@@ -139,8 +124,7 @@ main() {
         expect(mockWindow.history.urlList.last, equals('/foo'));
       });
 
-      test('should not change page title if the title property is not set',
-          () async {
+      test('should not change page title if the title property is not set', () async {
         router.root.addRoute(name: 'foo', path: '/foo');
 
         await router.go('foo', {});
@@ -149,15 +133,12 @@ main() {
         expect(mockWindow.history.urlList.last, equals('/foo'));
       });
 
-      test('should support dynamic pageTitle based on route properties',
-          () async {
+      test('should support dynamic pageTitle based on route properties', () async {
         router.root.addRoute(
             name: 'foo',
             path: '/foo/:param',
-            pageTitle: (Route route) =>
-                'Foo: ${route.parameters['param']} - ${route.queryParameters['what']}');
-        await router.go('foo', {'param': 'something'},
-            queryParameters: {'what': 'ever'});
+            pageTitle: (Route route) => 'Foo: ${route.parameters['param']} - ${route.queryParameters['what']}');
+        await router.go('foo', {'param': 'something'}, queryParameters: {'what': 'ever'});
         expect(historyProvider.pageTitle, 'Foo: something - ever');
       });
     });
@@ -173,8 +154,7 @@ main() {
         router = new Router(historyProvider: historyProvider);
       });
 
-      test('should use history.push/.replaceState when using BrowserHistory',
-          () async {
+      test('should use history.push/.replaceState when using BrowserHistory', () async {
         router.root.addRoute(name: 'articles', path: '/articles');
 
         await router.gotoUrl('/articles');
@@ -198,18 +178,12 @@ main() {
         router.root.addRoute(name: 'articles', path: '/articles');
         await router.gotoUrl('/articles?foo=foo%20bar&bar=%25baz%2Baux');
         expect(mockWindow.history.urlList.length, equals(1));
-        expect(mockWindow.history.urlList.last,
-            equals('/articles?foo=foo%20bar&bar=%25baz%2Baux'));
-        expect(router.activePath.last.queryParameters,
-            {'foo': 'foo bar', 'bar': '%baz+aux'});
+        expect(mockWindow.history.urlList.last, equals('/articles?foo=foo%20bar&bar=%25baz%2Baux'));
+        expect(router.activePath.last.queryParameters, {'foo': 'foo bar', 'bar': '%baz+aux'});
       });
 
       test('should work with hierarchical routes', () async {
-        router.root
-          ..addRoute(
-              name: 'a',
-              path: '/:foo',
-              mount: (child) => child..addRoute(name: 'b', path: '/:bar'));
+        router.root..addRoute(name: 'a', path: '/:foo', mount: (child) => child..addRoute(name: 'b', path: '/:bar'));
 
         Route routeA = router.root.findRoute('a');
         Route routeB = router.root.findRoute('a.b');
@@ -238,8 +212,7 @@ main() {
         expect(mockWindow.history.urlList.last, equals('/foo'));
       });
 
-      test('should not change page title if the title property is not set',
-          () async {
+      test('should not change page title if the title property is not set', () async {
         router.root.addRoute(name: 'foo', path: '/foo');
 
         await router.gotoUrl('/foo');
@@ -248,13 +221,11 @@ main() {
         expect(mockWindow.history.urlList.last, equals('/foo'));
       });
 
-      test('should support dynamic pageTitle based on route properties',
-          () async {
+      test('should support dynamic pageTitle based on route properties', () async {
         router.root.addRoute(
             name: 'foo',
             path: '/foo/:param',
-            pageTitle: (Route route) =>
-                'Foo: ${route.parameters['param']} - ${route.queryParameters['what']}');
+            pageTitle: (Route route) => 'Foo: ${route.parameters['param']} - ${route.queryParameters['what']}');
         await router.gotoUrl('/foo/something?what=ever');
         expect(historyProvider.pageTitle, 'Foo: something - ever');
       });
@@ -263,8 +234,7 @@ main() {
     group('goBack', () {
       test('should go to the previous route', () async {
         MockWindow mockWindow = new MockWindow();
-        Router router = new Router(
-            historyProvider: new BrowserHistory(windowImpl: mockWindow));
+        Router router = new Router(historyProvider: new BrowserHistory(windowImpl: mockWindow));
 
         router.root.addRoute(name: 'foo', path: '/foo');
         router.root.addRoute(name: 'bar', path: '/bar');
@@ -281,41 +251,28 @@ main() {
     group('url', () {
       test('should reconstruct url', () async {
         final mockWindow = new MockWindow();
-        final router = new Router(
-            historyProvider: new BrowserHistory(windowImpl: mockWindow));
+        final router = new Router(historyProvider: new BrowserHistory(windowImpl: mockWindow));
         router.root
           ..addRoute(
               name: 'a',
               defaultRoute: true,
               path: '/:foo',
-              mount: (child) => child
-                ..addRoute(name: 'b', defaultRoute: true, path: '/:bar'));
+              mount: (child) => child..addRoute(name: 'b', defaultRoute: true, path: '/:bar'));
 
         final routeA = router.root.findRoute('a');
 
         await router.route('');
         expect(router.url('a.b'), '/null/null');
         expect(router.url('a.b', parameters: {'foo': 'aaa'}), '/aaa/null');
-        expect(
-            router.url('b', parameters: {'bar': 'bbb'}, startingFrom: routeA),
-            '/null/bbb');
+        expect(router.url('b', parameters: {'bar': 'bbb'}, startingFrom: routeA), '/null/bbb');
 
         await router.route('/foo/bar');
         expect(router.url('a.b'), '/foo/bar');
         expect(router.url('a.b', parameters: {'foo': 'aaa'}), '/aaa/bar');
-        expect(
-            router.url('b', parameters: {'bar': 'bbb'}, startingFrom: routeA),
-            '/foo/bbb');
-        expect(
-            router.url('b',
-                parameters: {'foo': 'aaa', 'bar': 'bbb'}, startingFrom: routeA),
-            '/foo/bbb');
+        expect(router.url('b', parameters: {'bar': 'bbb'}, startingFrom: routeA), '/foo/bbb');
+        expect(router.url('b', parameters: {'foo': 'aaa', 'bar': 'bbb'}, startingFrom: routeA), '/foo/bbb');
 
-        expect(
-            router.url('b',
-                parameters: {'bar': 'bbb'},
-                queryParameters: {'param1': 'val1'},
-                startingFrom: routeA),
+        expect(router.url('b', parameters: {'bar': 'bbb'}, queryParameters: {'param1': 'val1'}, startingFrom: routeA),
             '/foo/bbb?param1=val1');
       });
     });
@@ -326,8 +283,7 @@ main() {
 
       setUp(() {
         mockWindow = new MockWindow();
-        router = new Router(
-            historyProvider: new BrowserHistory(windowImpl: mockWindow));
+        router = new Router(historyProvider: new BrowserHistory(windowImpl: mockWindow));
       });
 
       test('should correctly identify active path after relative go', () async {
@@ -339,18 +295,13 @@ main() {
                 ..addRoute(
                     name: 'bar',
                     path: '/bar',
-                    mount: (child) => child
-                      ..addRoute(
-                          name: 'baz', path: '/baz', mount: (child) => child))
+                    mount: (child) => child..addRoute(name: 'baz', path: '/baz', mount: (child) => child))
                 ..addRoute(
                     name: 'qux',
                     path: '/qux',
-                    mount: (child) => child
-                      ..addRoute(
-                          name: 'aux', path: '/aux', mount: (child) => child)));
+                    mount: (child) => child..addRoute(name: 'aux', path: '/aux', mount: (child) => child)));
 
-        final strPath =
-            (List<Route> path) => path.map((Route r) => r.name).join('.');
+        final strPath = (List<Route> path) => path.map((Route r) => r.name).join('.');
 
         expect(strPath(router.activePath), '');
 
@@ -362,9 +313,7 @@ main() {
         expect(strPath(router.activePath), 'foo.bar');
       });
 
-      test(
-          'should correctly identify active path after relative go from deeper active path',
-          () async {
+      test('should correctly identify active path after relative go from deeper active path', () async {
         router.root
           ..addRoute(
               name: 'foo',
@@ -373,18 +322,13 @@ main() {
                 ..addRoute(
                     name: 'bar',
                     path: '/bar',
-                    mount: (child) => child
-                      ..addRoute(
-                          name: 'baz', path: '/baz', mount: (child) => child))
+                    mount: (child) => child..addRoute(name: 'baz', path: '/baz', mount: (child) => child))
                 ..addRoute(
                     name: 'qux',
                     path: '/qux',
-                    mount: (child) => child
-                      ..addRoute(
-                          name: 'aux', path: '/aux', mount: (child) => child)));
+                    mount: (child) => child..addRoute(name: 'aux', path: '/aux', mount: (child) => child)));
 
-        final strPath =
-            (List<Route> path) => path.map((Route r) => r.name).join('.');
+        final strPath = (List<Route> path) => path.map((Route r) => r.name).join('.');
 
         expect(strPath(router.activePath), '');
 
@@ -399,15 +343,12 @@ main() {
 
     group('listen', () {
       group('pushState', () {
-        testInit(MockWindow mockWindow, MockLocation mockLocation,
-            [count = 1]) {
+        testInit(MockWindow mockWindow, MockLocation mockLocation, [count = 1]) {
           when(mockLocation.pathname).thenReturn('/hello');
           when(mockLocation.search).thenReturn('?foo=bar&baz=bat');
-          final router = new Router(
-              historyProvider: new BrowserHistory(windowImpl: mockWindow));
+          final router = new Router(historyProvider: new BrowserHistory(windowImpl: mockWindow));
           router.root.addRoute(name: 'hello', path: '/hello');
-          router.onRouteStart
-              .listen(expectAsync1((RouteStartEvent start) async {
+          router.onRouteStart.listen(expectAsync1((RouteStartEvent start) async {
             await start.completed;
             expect(router.findRoute('hello').isActive, isTrue);
             expect(router.findRoute('hello').queryParameters['baz'], 'bat');
@@ -419,8 +360,7 @@ main() {
         test('should route current path on listen with pop', () async {
           final mockLocation = new MockLocation([]);
           final mockWindow = new MockWindow(mockLocation: mockLocation);
-          final mockPopStateController =
-              new StreamController<PopStateEvent>(sync: true);
+          final mockPopStateController = new StreamController<PopStateEvent>(sync: true);
           when(mockWindow.onPopState).thenReturn(mockPopStateController.stream);
           testInit(mockWindow, mockLocation, 2);
           mockPopStateController.add(null);
@@ -430,8 +370,7 @@ main() {
         test('should route current path on listen without pop', () async {
           final mockLocation = new MockLocation([]);
           final mockWindow = new MockWindow(mockLocation: mockLocation);
-          final mockPopStateController =
-              new StreamController<PopStateEvent>(sync: true);
+          final mockPopStateController = new StreamController<PopStateEvent>(sync: true);
           when(mockWindow.onPopState).thenReturn(mockPopStateController.stream);
           testInit(mockWindow, mockLocation);
           await mockPopStateController.close();
@@ -439,8 +378,7 @@ main() {
 
         test('should process url changes for route rejection', () async {
           final mockWindow = new MockWindow();
-          final router = new Router(
-              historyProvider: new BrowserHistory(windowImpl: mockWindow));
+          final router = new Router(historyProvider: new BrowserHistory(windowImpl: mockWindow));
           router.root
             ..addRoute(
                 name: 'foo',
@@ -472,8 +410,7 @@ main() {
           when(mockWindow.location.pathname).thenReturn('/foo');
           when(mockWindow.location.search).thenReturn('');
           when(mockWindow.location.hash).thenReturn('');
-          final router = new Router(
-              historyProvider: new BrowserHistory(windowImpl: mockWindow));
+          final router = new Router(historyProvider: new BrowserHistory(windowImpl: mockWindow));
           final fallbackCompleter = new Completer();
           router.root
             ..addRoute(
@@ -508,8 +445,7 @@ main() {
         setUp(() {
           mockWindow = new MockWindow();
           history = new BrowserHistory(windowImpl: mockWindow);
-          mockPopStateController =
-              new StreamController<PopStateEvent>(sync: true);
+          mockPopStateController = new StreamController<PopStateEvent>(sync: true);
           when(mockWindow.onPopState).thenReturn(mockPopStateController.stream);
           router = new Router(historyProvider: history);
           router.root.addRoute(name: 'foo', path: '/foo', pageTitle: 'Foo');
@@ -523,8 +459,7 @@ main() {
           }
         });
 
-        test('it should be called if event triggered on anchor element',
-            () async {
+        test('it should be called if event triggered on anchor element', () async {
           AnchorElement anchor = new AnchorElement();
           anchor.href = '/foo';
           document.body.append(toRemove = anchor);
@@ -536,13 +471,12 @@ main() {
 
           anchor.click();
 
-          await new Future.delayed(Duration.ZERO);
+          await new Future.delayed(core.Duration.zero);
           expect(history.pageTitle, equals('Foo'));
           expect(router.findRoute('foo').isActive, isTrue);
         });
 
-        test('it should not be called if anchor element has a target attribute',
-            () async {
+        test('it should not be called if anchor element has a target attribute', () async {
           AnchorElement anchor = new AnchorElement();
           anchor.href = '/foo';
           anchor.target = '_blank';
@@ -555,14 +489,12 @@ main() {
 
           anchor.click();
 
-          await new Future.delayed(Duration.ZERO);
+          await new Future.delayed(core.Duration.zero);
           expect(history.pageTitle, equals('page title'));
           expect(router.findRoute('foo').isActive, isFalse);
         });
 
-        test(
-            'it should be called if event triggered on child of an anchor element',
-            () async {
+        test('it should be called if event triggered on child of an anchor element', () async {
           Element anchorChild = new DivElement();
           AnchorElement anchor = new AnchorElement();
           anchor.href = '/foo';
@@ -576,7 +508,7 @@ main() {
 
           anchorChild.click();
 
-          await new Future.delayed(Duration.ZERO);
+          await new Future.delayed(core.Duration.zero);
           expect(history.pageTitle, equals('Foo'));
           expect(router.findRoute('foo').isActive, isTrue);
         });
@@ -595,7 +527,7 @@ main() {
 
           anchor.click();
 
-          await new Future.delayed(Duration.ZERO);
+          await new Future.delayed(core.Duration.zero);
           expect(history.pageTitle, equals('Foo'));
           expect(router.findRoute('foo').isActive, isTrue);
         });

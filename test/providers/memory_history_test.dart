@@ -3,6 +3,7 @@ library route.providers.memory_history_test;
 import 'dart:async';
 import 'dart:html';
 
+import 'package:dart2_constant/core.dart' as core;
 import 'package:test/test.dart';
 import 'package:route_hierarchical/client.dart';
 import 'package:route_hierarchical/history_provider.dart';
@@ -49,16 +50,11 @@ main() {
 
         final queryParams = {'foo': 'foo bar', 'bar': '%baz+aux'};
         await router.go('articles', {}, queryParameters: queryParams);
-        expect(urlHistory,
-            equals(['', '/articles?foo=foo%20bar&bar=%25baz%2Baux']));
+        expect(urlHistory, equals(['', '/articles?foo=foo%20bar&bar=%25baz%2Baux']));
       });
 
       test('should work with hierarchical go', () async {
-        router.root
-          ..addRoute(
-              name: 'a',
-              path: '/:foo',
-              mount: (child) => child..addRoute(name: 'b', path: '/:bar'));
+        router.root..addRoute(name: 'a', path: '/:foo', mount: (child) => child..addRoute(name: 'b', path: '/:bar'));
 
         final routeA = router.root.findRoute('a');
 
@@ -69,8 +65,7 @@ main() {
         expect(urlHistory, equals(['', '/null/null', '/aaaa/bbbb']));
 
         await router.go('b', {'bar': 'bbbb'}, startingFrom: routeA);
-        expect(
-            urlHistory, equals(['', '/null/null', '/aaaa/bbbb', '/aaaa/bbbb']));
+        expect(urlHistory, equals(['', '/null/null', '/aaaa/bbbb', '/aaaa/bbbb']));
       });
 
       test('should attempt to reverse default routes', () async {
@@ -81,12 +76,8 @@ main() {
               defaultRoute: true,
               path: '/:foo',
               enter: (_) => counters['aEnter']++,
-              mount: (child) => child
-                ..addRoute(
-                    name: 'b',
-                    defaultRoute: true,
-                    path: '/:bar',
-                    enter: (_) => counters['bEnter']++));
+              mount: (child) =>
+                  child..addRoute(name: 'b', defaultRoute: true, path: '/:bar', enter: (_) => counters['bEnter']++));
 
         expect(counters, {'aEnter': 0, 'bEnter': 0});
 
@@ -105,11 +96,7 @@ main() {
               name: 'a',
               path: '/foo',
               enter: (_) => counters['aEnter']++,
-              mount: (child) => child
-                ..addRoute(
-                    name: 'b',
-                    path: '/bar',
-                    enter: (_) => counters['bEnter']++));
+              mount: (child) => child..addRoute(name: 'b', path: '/bar', enter: (_) => counters['bEnter']++));
 
         expect(counters, {'aEnter': 0, 'bEnter': 0});
 
@@ -128,8 +115,7 @@ main() {
         expect(historyProvider.pageTitle, 'Foo');
       });
 
-      test('should not change page title if the title property is not set',
-          () async {
+      test('should not change page title if the title property is not set', () async {
         router.root.addRoute(name: 'foo', path: '/foo');
         await router.go('foo', {});
         expect(historyProvider.pageTitle, '');
@@ -139,10 +125,8 @@ main() {
         router.root.addRoute(
             name: 'foo',
             path: '/foo/:param',
-            pageTitle: (Route route) =>
-                'Foo: ${route.parameters['param']} - ${route.queryParameters['what']}');
-        await router.go('foo', {'param': 'something'},
-            queryParameters: {'what': 'ever'});
+            pageTitle: (Route route) => 'Foo: ${route.parameters['param']} - ${route.queryParameters['what']}');
+        await router.go('foo', {'param': 'something'}, queryParameters: {'what': 'ever'});
         expect(historyProvider.pageTitle, 'Foo: something - ever');
       });
     });
@@ -158,8 +142,7 @@ main() {
         router = new Router(historyProvider: historyProvider);
       });
 
-      test('should use history.push/.replaceState when using BrowserHistory',
-          () async {
+      test('should use history.push/.replaceState when using BrowserHistory', () async {
         router.root.addRoute(name: 'articles', path: '/articles');
 
         expect(urlHistory, equals(['']));
@@ -180,18 +163,12 @@ main() {
       test('should support query parameters in the URL', () async {
         router.root.addRoute(name: 'articles', path: '/articles');
         await router.gotoUrl('/articles?foo=foo%20bar&bar=%25baz%2Baux');
-        expect(urlHistory,
-            equals(['', '/articles?foo=foo%20bar&bar=%25baz%2Baux']));
-        expect(router.activePath.last.queryParameters,
-            {'foo': 'foo bar', 'bar': '%baz+aux'});
+        expect(urlHistory, equals(['', '/articles?foo=foo%20bar&bar=%25baz%2Baux']));
+        expect(router.activePath.last.queryParameters, {'foo': 'foo bar', 'bar': '%baz+aux'});
       });
 
       test('should work with hierarchical routes', () async {
-        router.root
-          ..addRoute(
-              name: 'a',
-              path: '/:foo',
-              mount: (child) => child..addRoute(name: 'b', path: '/:bar'));
+        router.root..addRoute(name: 'a', path: '/:foo', mount: (child) => child..addRoute(name: 'b', path: '/:bar'));
 
         Route routeA = router.root.findRoute('a');
         Route routeB = router.root.findRoute('a.b');
@@ -217,8 +194,7 @@ main() {
         expect(urlHistory, equals(['', '/foo']));
       });
 
-      test('should not change page title if the title property is not set',
-          () async {
+      test('should not change page title if the title property is not set', () async {
         router.root.addRoute(name: 'foo', path: '/foo');
 
         await router.gotoUrl('/foo');
@@ -226,13 +202,11 @@ main() {
         expect(urlHistory, equals(['', '/foo']));
       });
 
-      test('should support dynamic pageTitle based on route properties',
-          () async {
+      test('should support dynamic pageTitle based on route properties', () async {
         router.root.addRoute(
             name: 'foo',
             path: '/foo/:param',
-            pageTitle: (Route route) =>
-                'Foo: ${route.parameters['param']} - ${route.queryParameters['what']}');
+            pageTitle: (Route route) => 'Foo: ${route.parameters['param']} - ${route.queryParameters['what']}');
         await router.gotoUrl('/foo/something?what=ever');
         expect(historyProvider.pageTitle, 'Foo: something - ever');
       });
@@ -241,8 +215,7 @@ main() {
     group('goBack', () {
       test('should go to the previous route', () async {
         List<String> urlHistory = [];
-        Router router = new Router(
-            historyProvider: new MemoryHistory(urlHistory: urlHistory));
+        Router router = new Router(historyProvider: new MemoryHistory(urlHistory: urlHistory));
 
         router.root.addRoute(name: 'foo', path: '/foo');
         router.root.addRoute(name: 'bar', path: '/bar');
@@ -264,36 +237,23 @@ main() {
               name: 'a',
               defaultRoute: true,
               path: '/:foo',
-              mount: (child) => child
-                ..addRoute(name: 'b', defaultRoute: true, path: '/:bar'));
+              mount: (child) => child..addRoute(name: 'b', defaultRoute: true, path: '/:bar'));
 
         final routeA = router.root.findRoute('a');
 
         await router.route('');
         expect(router.url('a.b'), router.normalizeUrl('/null/null'));
-        expect(router.url('a.b', parameters: {'foo': 'aaa'}),
-            router.normalizeUrl('/aaa/null'));
-        expect(
-            router.url('b', parameters: {'bar': 'bbb'}, startingFrom: routeA),
-            router.normalizeUrl('/null/bbb'));
+        expect(router.url('a.b', parameters: {'foo': 'aaa'}), router.normalizeUrl('/aaa/null'));
+        expect(router.url('b', parameters: {'bar': 'bbb'}, startingFrom: routeA), router.normalizeUrl('/null/bbb'));
 
         await router.route('/foo/bar');
         expect(router.url('a.b'), router.normalizeUrl('/foo/bar'));
-        expect(router.url('a.b', parameters: {'foo': 'aaa'}),
-            router.normalizeUrl('/aaa/bar'));
-        expect(
-            router.url('b', parameters: {'bar': 'bbb'}, startingFrom: routeA),
-            router.normalizeUrl('/foo/bbb'));
-        expect(
-            router.url('b',
-                parameters: {'foo': 'aaa', 'bar': 'bbb'}, startingFrom: routeA),
+        expect(router.url('a.b', parameters: {'foo': 'aaa'}), router.normalizeUrl('/aaa/bar'));
+        expect(router.url('b', parameters: {'bar': 'bbb'}, startingFrom: routeA), router.normalizeUrl('/foo/bbb'));
+        expect(router.url('b', parameters: {'foo': 'aaa', 'bar': 'bbb'}, startingFrom: routeA),
             router.normalizeUrl('/foo/bbb'));
 
-        expect(
-            router.url('b',
-                parameters: {'bar': 'bbb'},
-                queryParameters: {'param1': 'val1'},
-                startingFrom: routeA),
+        expect(router.url('b', parameters: {'bar': 'bbb'}, queryParameters: {'param1': 'val1'}, startingFrom: routeA),
             router.normalizeUrl('/foo/bbb?param1=val1'));
       });
     });
@@ -314,18 +274,13 @@ main() {
                 ..addRoute(
                     name: 'bar',
                     path: '/bar',
-                    mount: (child) => child
-                      ..addRoute(
-                          name: 'baz', path: '/baz', mount: (child) => child))
+                    mount: (child) => child..addRoute(name: 'baz', path: '/baz', mount: (child) => child))
                 ..addRoute(
                     name: 'qux',
                     path: '/qux',
-                    mount: (child) => child
-                      ..addRoute(
-                          name: 'aux', path: '/aux', mount: (child) => child)));
+                    mount: (child) => child..addRoute(name: 'aux', path: '/aux', mount: (child) => child)));
 
-        final strPath =
-            (List<Route> path) => path.map((Route r) => r.name).join('.');
+        final strPath = (List<Route> path) => path.map((Route r) => r.name).join('.');
 
         expect(strPath(router.activePath), '');
 
@@ -337,9 +292,7 @@ main() {
         expect(strPath(router.activePath), 'foo.bar');
       });
 
-      test(
-          'should correctly identify active path after relative go from deeper active path',
-          () async {
+      test('should correctly identify active path after relative go from deeper active path', () async {
         router.root
           ..addRoute(
               name: 'foo',
@@ -348,18 +301,13 @@ main() {
                 ..addRoute(
                     name: 'bar',
                     path: '/bar',
-                    mount: (child) => child
-                      ..addRoute(
-                          name: 'baz', path: '/baz', mount: (child) => child))
+                    mount: (child) => child..addRoute(name: 'baz', path: '/baz', mount: (child) => child))
                 ..addRoute(
                     name: 'qux',
                     path: '/qux',
-                    mount: (child) => child
-                      ..addRoute(
-                          name: 'aux', path: '/aux', mount: (child) => child)));
+                    mount: (child) => child..addRoute(name: 'aux', path: '/aux', mount: (child) => child)));
 
-        final strPath =
-            (List<Route> path) => path.map((Route r) => r.name).join('.');
+        final strPath = (List<Route> path) => path.map((Route r) => r.name).join('.');
 
         expect(strPath(router.activePath), '');
 
@@ -391,8 +339,7 @@ main() {
           }
         });
 
-        test('it should be called if event triggered on anchor element',
-            () async {
+        test('it should be called if event triggered on anchor element', () async {
           AnchorElement anchor = new AnchorElement();
           anchor.href = router.normalizeUrl('/foo');
           document.body.append(toRemove = anchor);
@@ -404,13 +351,12 @@ main() {
 
           anchor.click();
 
-          await new Future.delayed(Duration.ZERO);
+          await new Future.delayed(core.Duration.zero);
           expect(history.pageTitle, equals('Foo'));
           expect(router.findRoute('foo').isActive, isTrue);
         });
 
-        test('it should not be called if anchor element has a target attribute',
-            () async {
+        test('it should not be called if anchor element has a target attribute', () async {
           AnchorElement anchor = new AnchorElement();
           anchor.href = '/foo';
           anchor.target = '_blank';
@@ -423,14 +369,12 @@ main() {
 
           anchor.click();
 
-          await new Future.delayed(Duration.ZERO);
+          await new Future.delayed(core.Duration.zero);
           expect(history.pageTitle, equals(''));
           expect(router.findRoute('foo').isActive, isFalse);
         });
 
-        test(
-            'it should be called if event triggered on child of an anchor element',
-            () async {
+        test('it should be called if event triggered on child of an anchor element', () async {
           Element anchorChild = new DivElement();
           AnchorElement anchor = new AnchorElement();
           anchor.href = router.normalizeUrl('/foo');
@@ -444,7 +388,7 @@ main() {
 
           anchorChild.click();
 
-          await new Future.delayed(Duration.ZERO);
+          await new Future.delayed(core.Duration.zero);
           expect(history.pageTitle, equals('Foo'));
           expect(router.findRoute('foo').isActive, isTrue);
         });
@@ -463,7 +407,7 @@ main() {
 
           anchor.click();
 
-          await new Future.delayed(Duration.ZERO);
+          await new Future.delayed(core.Duration.zero);
           expect(history.pageTitle, equals('Foo'));
           expect(router.findRoute('foo').isActive, isTrue);
         });
@@ -474,9 +418,7 @@ main() {
       List<String> urlHistory = [''];
       MemoryHistory memHistory = new MemoryHistory(urlHistory: urlHistory);
       final router = new Router(historyProvider: memHistory);
-      router.root
-        ..addRoute(name: 'foo', path: '/foo')
-        ..addRoute(name: 'bar', path: '/bar');
+      router.root..addRoute(name: 'foo', path: '/foo')..addRoute(name: 'bar', path: '/bar');
 
       expect(urlHistory, equals(['']));
       await router.go('foo', {});

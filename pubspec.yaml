@@ -9,13 +9,10 @@ homepage: https://github.com/angular/route.dart
 environment:
   sdk: '>=1.9.0 <3.0.0'
 
-web:
-  compiler:
-    debug: dartdevc
-
 dependencies:
   logging: ">=0.11.3 <1.0.0"
   uuid: ^1.0.0
+  dart2_constant: ^1.0.0
 
 dev_dependencies:
   build_runner: ">=0.6.0 <1.0.0"
@@ -23,8 +20,8 @@ dev_dependencies:
   build_web_compilers: ">=0.2.0 <1.0.0"
   coverage: ">=0.7.2 <2.0.0"
   dart_dev: ^1.9.5
-  mockito: ">=0.10.0 <2.0.0"
-  test: ">=0.12.3+5 <2.0.0"
+  mockito: ">=0.10.0 <=3.0.0"
+  test: ">=0.12.30 <2.0.0"
 
 transformers:
   - test/pub_serve:
