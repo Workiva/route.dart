@@ -6,5 +6,5 @@ dart:
 dart_task:
   - dartanalyzer: lib example
   - dartfmt: true
-script:
+after_script:
   - tool/test.sh
