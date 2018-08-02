@@ -28,7 +28,7 @@ main(List<String> args) async {
 
   config.test
     ..concurrency = 1
-    ..platforms = ['content-shell']
+    ..platforms = ['chrome']
     ..unitTests = ['test/all_web_tests.dart']
     ..pubServe = true;
 
