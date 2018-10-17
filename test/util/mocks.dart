@@ -20,8 +20,8 @@ class MockWindow extends Mock implements Window {
   @override
   MockDocument document;
 
-  StreamController _onHashChangeController;
-  StreamController _onPopStateController;
+  StreamController<Event> _onHashChangeController;
+  StreamController<PopStateEvent> _onPopStateController;
   List<String> _urlList;
   MockLocation _location;
 
@@ -31,22 +31,18 @@ class MockWindow extends Mock implements Window {
     _location = mockLocation ?? new MockLocation(_urlList);
     document = new MockDocument();
 
-    when(location.host).thenReturn(window.location.host);
-    when(location.hash).thenReturn('');
-    when(document.title).thenReturn('page title');
-
     // keep track of a basic history list
-    _onHashChangeController = new StreamController();
+    _onHashChangeController = new StreamController<Event>();
     when(this.onHashChange)
-        .thenReturn(_onHashChangeController.stream.asBroadcastStream());
-    _onPopStateController = new StreamController();
+        .thenAnswer((i) => _onHashChangeController.stream.asBroadcastStream());
+    _onPopStateController = new StreamController<PopStateEvent>();
     when(this.onPopState)
-        .thenReturn(_onPopStateController.stream.asBroadcastStream());
+        .thenAnswer((i) => _onPopStateController.stream.asBroadcastStream());
   }
 
   changeHash(String hash) async {
-    await _onHashChangeController.add(hash);
-    await _onPopStateController.add(hash);
+    _onHashChangeController.add(new HashChangeEvent(hash, newUrl: hash));
+    _onPopStateController.add(new PopStateEvent(hash));
   }
 }
 
@@ -55,16 +51,19 @@ class MockHistory extends Mock implements History {
   MockHistory(this.urlList);
   bool backCalled = false;
 
+  @override
   back() {
     backCalled = true;
     urlList.removeLast();
   }
 
+  @override
   replaceState(Object data, String title, String url, [Map options]) {
     urlList.removeLast();
     urlList.add(url);
   }
 
+  @override
   pushState(Object data, String title, String url, [Map options]) {
     urlList.add(url);
   }
@@ -72,19 +71,28 @@ class MockHistory extends Mock implements History {
 
 class MockLocation extends Mock implements Location {
   List<String> urlList;
-  MockLocation(this.urlList);
+  MockLocation(this.urlList) {
+    when(host).thenAnswer((i) => window.location.host);
+    when(hash).thenAnswer((i) => '');
+  }
 
+  @override
   replace(String url) {
     urlList.removeLast();
     urlList.add(url);
   }
 
+  @override
   assign([String url]) {
     urlList.add(url);
   }
 }
 
-class MockDocument extends Mock implements HtmlDocument {}
+class MockDocument extends Mock implements HtmlDocument {
+  MockDocument() {
+    when(title).thenAnswer((i) => 'page title');
+  }
+}
 
 class MockMouseEvent extends Mock implements MouseEvent {
   MockMouseEvent({EventTarget target, List<Node> path}) {
@@ -106,6 +114,8 @@ class MockRouter extends Mock implements Router {}
 
 class MockRoutable implements Routable {
   bool routesConfigured = false;
+
+  @override
   void configureRoute(Route router) {
     router
       ..addRoute(name: 'default', path: '', defaultRoute: true)
@@ -119,6 +129,7 @@ class MockRoutableDeep implements Routable {
   bool routesConfigured = false;
   Routable deepRoutable;
 
+  @override
   void configureRoute(Route router) {
     router
       ..addRoute(name: 'default', path: '', defaultRoute: true)

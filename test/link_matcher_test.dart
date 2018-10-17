@@ -1,3 +1,4 @@
+@TestOn('browser')
 library route.link_matcher_test;
 
 import 'dart:html';

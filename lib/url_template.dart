@@ -29,8 +29,10 @@ class UrlTemplate implements UrlMatcher {
    */
   List _chunks;
 
+  @override
   String toString() => 'UrlTemplate($_pattern)';
 
+  @override
   int compareTo(UrlMatcher other) {
     final String tmpParamPattern = '\t';
     if (other is UrlTemplate) {
@@ -94,6 +96,7 @@ class UrlTemplate implements UrlMatcher {
     _pattern = new RegExp(sb.toString());
   }
 
+  @override
   UrlMatch match(String url) {
     Match match = _pattern.firstMatch(url);
     if (match == null) {
@@ -107,6 +110,7 @@ class UrlTemplate implements UrlMatcher {
     return new UrlMatch(match[0], tail, parameters);
   }
 
+  @override
   String reverse({Map parameters, String tail: ''}) {
     if (parameters == null) {
       parameters = const {};
@@ -114,5 +118,6 @@ class UrlTemplate implements UrlMatcher {
     return _chunks.map((c) => c is Function ? c(parameters) : c).join() + tail;
   }
 
+  @override
   List<String> get urlParameterNames => _fields;
 }

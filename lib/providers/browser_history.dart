@@ -8,23 +8,29 @@ class BrowserHistory implements HistoryProvider {
     _window = windowImpl ?? window;
   }
 
+  @override
   Stream get onChange => _window.onPopState;
 
+  @override
   String get path => '${_window.location.pathname}${_window.location.search}'
       '${_window.location.hash}';
 
+  @override
   String get urlStub => '';
 
+  @override
   String get pageTitle =>
       _pageTitle ?? (_window.document as HtmlDocument).title;
 
-  void set pageTitle(String title) {
+  @override
+  set pageTitle(String title) {
     if (title != null) {
       _pageTitle = title;
       (_window.document as HtmlDocument).title = _pageTitle;
     }
   }
 
+  @override
   void clickHandler(Event e, RouterLinkMatcher linkMatcher,
       Future<bool> gotoUrl(String url)) {
     Element el = e.target;
@@ -48,6 +54,7 @@ class BrowserHistory implements HistoryProvider {
     }
   }
 
+  @override
   void go(String path, bool replace) {
     if (replace) {
       _window.history.replaceState(null, pageTitle, path);
@@ -56,6 +63,7 @@ class BrowserHistory implements HistoryProvider {
     }
   }
 
+  @override
   void back() {
     _window.history.back();
   }

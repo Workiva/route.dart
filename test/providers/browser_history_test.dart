@@ -1,12 +1,14 @@
+@TestOn('browser')
 library route.providers.browser_history_test;
 
 import 'dart:async';
 import 'dart:html';
 
-import 'package:test/test.dart';
+import 'package:dart2_constant/core.dart' as constant;
 import 'package:mockito/mockito.dart';
 import 'package:route_hierarchical/client.dart';
 import 'package:route_hierarchical/history_provider.dart';
+import 'package:test/test.dart';
 
 import '../util/mocks.dart';
 import '../util/utils.dart';
@@ -402,7 +404,7 @@ main() {
         testInit(MockWindow mockWindow, MockLocation mockLocation,
             [count = 1]) {
           when(mockLocation.pathname).thenReturn('/hello');
-          when(mockLocation.search).thenReturn('?foo=bar&baz=bat');
+          when(mockLocation.search).thenAnswer((i) => '?foo=bar&baz=bat');
           final router = new Router(
               historyProvider: new BrowserHistory(windowImpl: mockWindow));
           router.root.addRoute(name: 'hello', path: '/hello');
@@ -421,7 +423,8 @@ main() {
           final mockWindow = new MockWindow(mockLocation: mockLocation);
           final mockPopStateController =
               new StreamController<PopStateEvent>(sync: true);
-          when(mockWindow.onPopState).thenReturn(mockPopStateController.stream);
+          when(mockWindow.onPopState)
+              .thenAnswer((i) => mockPopStateController.stream);
           testInit(mockWindow, mockLocation, 2);
           mockPopStateController.add(null);
           await mockPopStateController.close();
@@ -432,7 +435,8 @@ main() {
           final mockWindow = new MockWindow(mockLocation: mockLocation);
           final mockPopStateController =
               new StreamController<PopStateEvent>(sync: true);
-          when(mockWindow.onPopState).thenReturn(mockPopStateController.stream);
+          when(mockWindow.onPopState)
+              .thenAnswer((i) => mockPopStateController.stream);
           testInit(mockWindow, mockLocation);
           await mockPopStateController.close();
         });
@@ -510,7 +514,8 @@ main() {
           history = new BrowserHistory(windowImpl: mockWindow);
           mockPopStateController =
               new StreamController<PopStateEvent>(sync: true);
-          when(mockWindow.onPopState).thenReturn(mockPopStateController.stream);
+          when(mockWindow.onPopState)
+              .thenAnswer((i) => mockPopStateController.stream);
           router = new Router(historyProvider: history);
           router.root.addRoute(name: 'foo', path: '/foo', pageTitle: 'Foo');
         });
@@ -536,7 +541,7 @@ main() {
 
           anchor.click();
 
-          await new Future.delayed(Duration.ZERO);
+          await new Future.delayed(constant.Duration.zero);
           expect(history.pageTitle, equals('Foo'));
           expect(router.findRoute('foo').isActive, isTrue);
         });
@@ -555,7 +560,7 @@ main() {
 
           anchor.click();
 
-          await new Future.delayed(Duration.ZERO);
+          await new Future.delayed(constant.Duration.zero);
           expect(history.pageTitle, equals('page title'));
           expect(router.findRoute('foo').isActive, isFalse);
         });
@@ -576,7 +581,7 @@ main() {
 
           anchorChild.click();
 
-          await new Future.delayed(Duration.ZERO);
+          await new Future.delayed(constant.Duration.zero);
           expect(history.pageTitle, equals('Foo'));
           expect(router.findRoute('foo').isActive, isTrue);
         });
@@ -595,7 +600,7 @@ main() {
 
           anchor.click();
 
-          await new Future.delayed(Duration.ZERO);
+          await new Future.delayed(constant.Duration.zero);
           expect(history.pageTitle, equals('Foo'));
           expect(router.findRoute('foo').isActive, isTrue);
         });

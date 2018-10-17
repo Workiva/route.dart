@@ -1,3 +1,4 @@
+@TestOn('browser')
 library route.url_template_test;
 
 import 'package:test/test.dart';

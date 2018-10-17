@@ -1,4 +1,4 @@
-FROM drydock-prod.workiva.net/workiva/smithy-runner-generator:350667 as build
+FROM google/dart:2.0.0 as build
 
 # Build Environment Vars
 ARG BUILD_ID
@@ -22,7 +22,7 @@ RUN mkdir /root/.ssh && \
     umask 0077 && echo "$GIT_SSH_KEY" >/root/.ssh/id_rsa && \
     eval "$(ssh-agent -s)" && ssh-add /root/.ssh/id_rsa
 RUN echo "Starting the script section" && \
-		pub get && \
-		echo "script section completed"
+    pub get && \
+    echo "script section completed"
 ARG BUILD_ARTIFACTS_BUILD=/build/pubspec.lock
 FROM scratch

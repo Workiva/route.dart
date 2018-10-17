@@ -1,3 +1,4 @@
+@TestOn('browser')
 library route.url_matcher_test;
 
 import 'package:test/test.dart';

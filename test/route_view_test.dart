@@ -1,3 +1,4 @@
+@TestOn('browser')
 library route.route_view_test;
 
 import 'package:test/test.dart';

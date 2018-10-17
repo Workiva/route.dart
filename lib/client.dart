@@ -158,6 +158,7 @@ abstract class Route {
    */
   RouteHandle newHandle();
 
+  @override
   String toString() => '[Route: $name]';
 }
 

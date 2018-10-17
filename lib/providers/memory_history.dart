@@ -19,20 +19,26 @@ class MemoryHistory implements HistoryProvider {
     _urlStream = _urlStreamController.stream.asBroadcastStream();
   }
 
+  @override
   Stream get onChange => _urlStream;
 
+  @override
   String get path => _urlList.isNotEmpty ? _urlList.last : '';
 
+  @override
   String get urlStub => _namespace;
 
+  @override
   String get pageTitle => _pageTitle;
 
-  void set pageTitle(String title) {
+  @override
+  set pageTitle(String title) {
     if (title != null) {
       _pageTitle = title;
     }
   }
 
+  @override
   void clickHandler(Event e, RouterLinkMatcher linkMatcher,
       Future<bool> gotoUrl(String url)) {
     Element el = e.target;
@@ -56,6 +62,7 @@ class MemoryHistory implements HistoryProvider {
     }
   }
 
+  @override
   void go(String path, bool replace) {
     if (replace) {
       _urlList.removeLast();
@@ -64,6 +71,7 @@ class MemoryHistory implements HistoryProvider {
     _urlStreamController.add(path);
   }
 
+  @override
   void back() {
     if (_urlList.length > 1) {
       _urlList.removeLast();

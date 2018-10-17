@@ -1,8 +1,10 @@
+@TestOn('browser')
 library route.providers.hash_history_test;
 
 import 'dart:async';
 import 'dart:html';
 
+import 'package:dart2_constant/core.dart' as constant;
 import 'package:test/test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:route_hierarchical/client.dart';
@@ -470,7 +472,7 @@ main() {
 
           anchor.click();
 
-          await new Future.delayed(Duration.ZERO);
+          await new Future.delayed(constant.Duration.zero);
           expect(history.pageTitle, equals('Foo'));
           expect(router.findRoute('foo').isActive, isTrue);
         });
@@ -489,7 +491,7 @@ main() {
 
           anchor.click();
 
-          await new Future.delayed(Duration.ZERO);
+          await new Future.delayed(constant.Duration.zero);
           expect(history.pageTitle, equals('page title'));
           expect(router.findRoute('foo').isActive, isFalse);
         });
@@ -510,7 +512,7 @@ main() {
 
           anchorChild.click();
 
-          await new Future.delayed(Duration.ZERO);
+          await new Future.delayed(constant.Duration.zero);
           expect(history.pageTitle, equals('Foo'));
           expect(router.findRoute('foo').isActive, isTrue);
         });
@@ -529,7 +531,7 @@ main() {
 
           anchor.click();
 
-          await new Future.delayed(Duration.ZERO);
+          await new Future.delayed(constant.Duration.zero);
           expect(history.pageTitle, equals('Foo'));
           expect(router.findRoute('foo').isActive, isTrue);
         });
